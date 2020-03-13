@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->      
+<html>
+    <head>
+        <title>TODO supply a title</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body>
+        <form action="servletlogin" method="get">
+            Name:<input type="text" name="uname"><br>
+            Password:<input type="password" name="upass"><br>
+            <input type="SUBMIT" value="SUBMIT">
+        </form>
+        <div>TODO write content</div>
+    </body>
+</html>
+//VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//---------------------------------------------------html file above ... and servlet java(servletlogin.java)file below
+//VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.*;
+
+
+
+/**
+ *
+ * @author osim ansari
+ */
+@WebServlet(urlPatterns = {"/servletlogin"})
+public class servletlogin extends HttpServlet {
+Connection con;
+java.sql.Statement st;
+ResultSet rs;
+PreparedStatement ps;
+   
+    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        response.setContentType("text/html;charset=UTF-8");
+        try (PrintWriter out = response.getWriter()) {
+         
+            out.println("<!DOCTYPE html>");
+            out.println("<html>");
+            out.println("<head>");
+            out.println("<title>Servlet servletlogin</title>");            
+            out.println("</head>");
+            out.println("<body>");
+            out.println("<h1>Servlet servletlogin at " + request.getContextPath() + "</h1>");
+            out.println("</body>");
+            out.println("</html>");
+        }
+    }
+
+    
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        response.setContentType("text/html");
+        PrintWriter out= response.getWriter();
+        
+        String name=request.getParameter("uname");
+        
+        String pass=request.getParameter("upass");
+        
+        out.println("<HTML>");
+        out.println("<BODY>");
+        try
+        {
+            Class.forName("org.postgresql.Driver");
+            con = DriverManager.getConnection("jdbc:postgresql:ty","postgres","postgres");
+            if(con==null)
+                out.println("Connection to database failed");
+            else
+            {
+                st=con.createStatement();
+                rs=st.executeQuery("select * from login where login='"+name+"'and password='"+pass+"'");
+                if(rs !=null)
+                {
+                    out.println("welcome:'"+name+"'");
+                    
+                }
+                else
+                    out.println("no such user");
+                
+            }
+        }
+        catch(ClassNotFoundException | SQLException e){}
+        out.println("</BODY>");
+        out.println("</HTML>");
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        processRequest(request, response);
+    }
+
+    @Override
+    public String getServletInfo() {
+        return "Short description";
+    }// </editor-fold>
+
+}
